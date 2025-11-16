@@ -1,0 +1,8 @@
+public class MeowProcessor {
+
+    public static void makeAllMeow(Meowing... meowers) {
+        for (Meowing m : meowers) {
+            m.meow();
+        }
+    }
+}
