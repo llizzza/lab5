@@ -4,32 +4,43 @@ import java.util.*;
 
 public class ConsonantExtractor {
 
-    private static final Set<Character> CONSONANTS = Set.of (
-            'б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ');
+    private static final Set<Character> CONSONANTS = Set.of(
+            'б','в','г','д','ж','з','й','к','л','м',
+            'н','п','р','с','т','ф','х','ц','ч','ш','щ'
+    );
 
     public static List<Character> extractUniqueConsonants(String filePath) throws IOException {
 
         String text = Files.readString(Path.of(filePath));
 
-        String[] words = text.toLowerCase().replaceAll("[^а-яё\\s]", " ").split("\\s+");
+        String[] words = text.toLowerCase()
+                .replaceAll("[^а-яё\\s]", " ")
+                .split("\\s+");
 
-        Map<Character, Set<Integer>> letterToWordIds = new HashMap<>();
+        Set<Character> uniqueSet = new HashSet<>();
+        Set<Character> repeatedSet = new HashSet<>();
 
-        for (int i = 0; i < words.length; i++) {
-            for (char ch : words[i].toCharArray()) {
+        for (String word : words) {
+            Set<Character> localSet = new HashSet<>();
+
+            for (char ch : word.toCharArray()) {
                 if (CONSONANTS.contains(ch)) {
-                    letterToWordIds.computeIfAbsent(ch, k -> new HashSet<>()).add(i);
+                    localSet.add(ch);
+                }
+            }
+
+            for (char c : localSet) {
+                if (!uniqueSet.contains(c) && !repeatedSet.contains(c)) {
+                    uniqueSet.add(c);
+                } else {
+                    repeatedSet.add(c);
                 }
             }
         }
 
-        List<Character> result = new ArrayList<>();
-        for (var entry : letterToWordIds.entrySet()) {
-            if (entry.getValue().size() == 1) {
-                result.add(entry.getKey());
-            }
-        }
+        uniqueSet.removeAll(repeatedSet);
 
+        List<Character> result = new ArrayList<>(uniqueSet);
         Collections.sort(result);
         return result;
     }
