@@ -1,33 +1,33 @@
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 
 public class QueueUtils {
 
-    private Queue<Integer> queue;
-
-    public QueueUtils(Queue<Integer> q) {
-        this.queue = new LinkedList<>(q);
-    }
-
-    public boolean areSegmentsEqual(int i1, int j1, int i2, int j2) {
-        List<Integer> list = new ArrayList<>(queue);
-
-        if (i1 < 0 || j1 >= list.size() || i2 < 0 || j2 >= list.size())
-            throw new IllegalArgumentException("Индексы выходят за пределы очереди");
-
-        if (i1 > j1 || i2 > j2)
-            throw new IllegalArgumentException("Начальный индекс больше конечного");
-
-        if ((j1 - i1) != (j2 - i2))
+    public static <T> boolean isSegmentEqualIterator(Queue<T> queue, int i, int j) {
+        if (queue == null || i < 0 || j >= queue.size() || i >= j) {
             return false;
+        }
 
-        List<Integer> s1 = list.subList(i1, j1 + 1);
-        List<Integer> s2 = list.subList(i2, j2 + 1);
+        Iterator<T> it = queue.iterator();
+        int index = 0;
+        T first = null;
 
-        return s1.equals(s2);
-    }
+        while (it.hasNext()) {
+            T value = it.next();
 
-    @Override
-    public String toString() {
-        return queue.toString();
+            if (index == i) {
+                first = value;
+            }
+
+            if (index > i && index <= j) {
+                if (!value.equals(first)) {
+                    return false;
+                }
+            }
+
+            index++;
+        }
+
+        return true;
     }
 }
